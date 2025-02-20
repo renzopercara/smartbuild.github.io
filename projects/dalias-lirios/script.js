@@ -63,7 +63,9 @@ function Calendar() {
             padding: "20px",
             borderRadius: "10px",
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-            backgroundColor: "white"
+            minWidth: '1500px',
+            backgroundColor: "white",
+            'overflow-x': 'auto',
         },
         headerCell: {
             backgroundColor: 'rgb(23, 65, 95)',
@@ -137,7 +139,7 @@ function Calendar() {
         },
         fullWidthTable: {
             width: "100%",
-            tableLayout: "fixed"
+            tableLayout: "fixed",
         },
         actionButtons: {
             display: "flex",
