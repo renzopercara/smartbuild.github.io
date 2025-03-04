@@ -1,7 +1,8 @@
 import { h, render } from "https://esm.sh/preact";
 import { useEffect, useState } from "https://esm.sh/preact/hooks";
 
-const apiUrl = 'https://script.google.com/macros/s/AKfycbx_I2PP77-PtbxtLqvjWHwYOvkwJQRKr_7heXUcn9rzZ2NyAdJp6mqtyw4vvd0ROYVI/exec';
+const apiUrlDalias = 'https://script.google.com/macros/s/AKfycbx_I2PP77-PtbxtLqvjWHwYOvkwJQRKr_7heXUcn9rzZ2NyAdJp6mqtyw4vvd0ROYVI/exec';
+const apiUrlDaliasGarage = 'https://script.google.com/macros/s/AKfycbwPOCa-7DUbpwlqQaLYZEYxkK-c88pfqJWZBj3Zq4ySgaOho0Ng2ZRw17H7gaQlvCw6/exec';
 
 const rendimientoLabels = {
     'Excelente': ["Excelente", "⭐⭐⭐⭐⭐"],
@@ -20,19 +21,24 @@ const fieldLabels = {
 };
 
 function Calendar() {
-    const [data, setData] = useState([]);
+    const [dataDalias, setDataDalias] = useState([]);
+    const [dataDaliasGarage, setDataDaliasGarage] = useState([]);
     const [currentWeekStartDate, setCurrentWeekStartDate] = useState(getStartOfWeek(new Date()));
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                setData(data);
-                setIsLoading(false);
+        Promise.all([
+            fetch(apiUrlDalias).then(response => response.json()),
+            fetch(apiUrlDaliasGarage).then(response => response.json())
+        ])
+            .then(([data1, data2]) => {
+                setDataDalias(data1);
+                setDataDaliasGarage(data2);
             })
             .catch(error => {
                 console.error("Error fetching data:", error);
+            })
+            .finally(() => {
                 setIsLoading(false);
             });
     }, []);
@@ -51,7 +57,7 @@ function Calendar() {
         });
     };
 
-    const getDayData = (date) => {
+    const getDayData = (date, data) => {
         return data.filter(item => new Date(item.fecha).toDateString() === date.toDateString());
     };
 
@@ -210,45 +216,117 @@ function Calendar() {
                     "Semana Siguiente"
                 )
             ),
-            h("table", { class: "table table-bordered table-striped text-center", style: { ...styles.fullWidthTable, borderCollapse: 'collapse' } },
-                h("thead", null,
-                    h("tr", null,
-                        h("th", { style: styles.leftCell }, ""),
-                        getWeekDays().map(date =>
-                            h("th", {
-                                key: date.toISOString(),
-                                class: date.toDateString() === new Date().toDateString() ? "bg-warning text-white" : "",
-                                style: date.toDateString() === new Date().toDateString() ? { ...styles.headerCell, ...styles.todayColumn } : styles.headerCell
-                            },
-                                h("div", null,
-                                    date.toLocaleDateString('es-ES', { weekday: 'long' }).charAt(0).toUpperCase() +
-                                    date.toLocaleDateString('es-ES', { weekday: 'long' }).slice(1),
-                                    h("br", null),
-                                    date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+            h("div", {},
+                h("div", {
+                    style: {
+                        backgroundColor: "#3f51b5",
+                        color: "white",
+                        padding: "10px 20px",
+                        borderRadius: "8px 8px 0 0",
+                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                    }
+                }, "Proyecto - Dalias-Lirios"),
+                h("table", { class: "table table-bordered table-striped text-center", style: { ...styles.fullWidthTable, borderCollapse: 'collapse' } },
+                    h("thead", null,
+                        h("tr", null,
+                            h("th", { style: styles.leftCell }, ""),
+                            getWeekDays().map(date =>
+                                h("th", {
+                                    key: date.toISOString(),
+                                    class: date.toDateString() === new Date().toDateString() ? "bg-warning text-white" : "",
+                                    style: date.toDateString() === new Date().toDateString() ? { ...styles.headerCell, ...styles.todayColumn } : styles.headerCell
+                                },
+                                    h("div", null,
+                                        date.toLocaleDateString('es-ES', { weekday: 'long' }).charAt(0).toUpperCase() +
+                                        date.toLocaleDateString('es-ES', { weekday: 'long' }).slice(1),
+                                        h("br", null),
+                                        date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+                                    )
                                 )
                             )
                         )
-                    )
-                ),
-                h("tbody", null,
-                    Object.keys(fieldLabels).map((field, rowIndex) =>
-                        h("tr", { key: rowIndex },
-                            h("td", { class: "fw-bold", style: styles.leftCell }, fieldLabels[field]),
-                            getWeekDays().map(date => {
-                                const dayData = getDayData(date);
-                                const value = dayData.length > 0 ? dayData[0][field] : "N/A";
+                    ),
+                    h("tbody", null,
+                        Object.keys(fieldLabels).map((field, rowIndex) =>
+                            h("tr", { key: rowIndex },
+                                h("td", { class: "fw-bold", style: styles.leftCell }, fieldLabels[field]),
+                                getWeekDays().map(date => {
+                                    const dayData = getDayData(date, dataDalias);
+                                    const value = dayData.length > 0 ? dayData[0][field] : "N/A";
 
-                                return h("td", { key: date.toISOString(), style: styles.bodyCell },
-                                    field === "rendimientoGeneral" && rendimientoLabels[value] ?
-                                        h("div", null,
-                                            h("div", null, rendimientoLabels[value][0]),
-                                            h("div", { style: { fontSize: "1.2rem", color: "#FFD700" } }, rendimientoLabels[value][1])
-                                        ) :
-                                        value.split('\n').map((item, index) => (
-                                            h("div", { key: index, style: { fontSize: '0.9rem' } }, item) // Ajusta el tamaño del texto
-                                        ))
-                                );
-                            })
+                                    return h("td", { key: date.toISOString(), style: styles.bodyCell },
+                                        field === "rendimientoGeneral" && rendimientoLabels[value] ?
+                                            h("div", null,
+                                                h("div", null, rendimientoLabels[value][0]),
+                                                h("div", { style: { fontSize: "1.2rem", color: "#FFD700" } }, rendimientoLabels[value][1])
+                                            ) :
+                                            value.split('\n').map((item, index) => (
+                                                h("div", { key: index, style: { fontSize: '0.9rem' } }, item) // Ajusta el tamaño del texto
+                                            ))
+                                    );
+                                })
+                            )
+                        )
+                    )
+                )
+            ),
+
+            h("div", {},
+                h("div", {
+                    style: {
+                        backgroundColor: "#3f51b5",
+                        color: "white",
+                        padding: "10px 20px",
+                        borderRadius: "8px 8px 0 0",
+                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                    }
+                }, "Proyecto - Garage - Dalias-Lirios"),
+                h("table", { class: "table table-bordered table-striped text-center", style: { ...styles.fullWidthTable, borderCollapse: 'collapse' } },
+                    h("thead", null,
+                        h("tr", null,
+                            h("th", { style: styles.leftCell }, ""),
+                            getWeekDays().map(date =>
+                                h("th", {
+                                    key: date.toISOString(),
+                                    class: date.toDateString() === new Date().toDateString() ? "bg-warning text-white" : "",
+                                    style: date.toDateString() === new Date().toDateString() ? { ...styles.headerCell, ...styles.todayColumn } : styles.headerCell
+                                },
+                                    h("div", null,
+                                        date.toLocaleDateString('es-ES', { weekday: 'long' }).charAt(0).toUpperCase() +
+                                        date.toLocaleDateString('es-ES', { weekday: 'long' }).slice(1),
+                                        h("br", null),
+                                        date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    h("tbody", null,
+                        Object.keys(fieldLabels).map((field, rowIndex) =>
+                            h("tr", { key: rowIndex },
+                                h("td", { class: "fw-bold", style: styles.leftCell }, fieldLabels[field]),
+                                getWeekDays().map(date => {
+                                    const dayData = getDayData(date, dataDaliasGarage);
+                                    const value = dayData.length > 0 ? dayData[0][field] : "N/A";
+
+                                    return h("td", { key: date.toISOString(), style: styles.bodyCell },
+                                        field === "rendimientoGeneral" && rendimientoLabels[value] ?
+                                            h("div", null,
+                                                h("div", null, rendimientoLabels[value][0]),
+                                                h("div", { style: { fontSize: "1.2rem", color: "#FFD700" } }, rendimientoLabels[value][1])
+                                            ) :
+                                            value.split('\n').map((item, index) => (
+                                                h("div", { key: index, style: { fontSize: '0.9rem' } }, item) // Ajusta el tamaño del texto
+                                            ))
+                                    );
+                                })
+                            )
                         )
                     )
                 )
