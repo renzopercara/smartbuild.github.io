@@ -1,7 +1,7 @@
 import { h, render } from "https://esm.sh/preact";
 import { useEffect, useState } from "https://esm.sh/preact/hooks";
 
-const apiUrl = 'https://script.google.com/macros/s/AKfycbx_I2PP77-PtbxtLqvjWHwYOvkwJQRKr_7heXUcn9rzZ2NyAdJp6mqtyw4vvd0ROYVI/exec';
+const apiUrl = 'https://script.google.com/macros/s/AKfycbwPOCa-7DUbpwlqQaLYZEYxkK-c88pfqJWZBj3Zq4ySgaOho0Ng2ZRw17H7gaQlvCw6/exec';
 
 const rendimientoLabels = {
     'Excelente': ["Excelente", "⭐⭐⭐⭐⭐"],
@@ -222,7 +222,7 @@ function Calendar() {
                         fontWeight: "bold",
                         textAlign: "center",
                     }
-                }, "Proyecto - Dalias/Lirios"),
+                }, "Proyecto - Garage - Dalias/Lirios"),
                 h("table", { class: "table table-bordered table-striped text-center", style: { ...styles.fullWidthTable, borderCollapse: 'collapse' } },
                     h("thead", null,
                         h("tr", null,
@@ -264,7 +264,7 @@ function Calendar() {
                                 })
                             )
                         )
-                    ),                    
+                    )
                 )
             ),
             h("div", { style: styles.actionButtons },
