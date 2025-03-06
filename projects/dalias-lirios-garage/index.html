@@ -50,6 +50,13 @@
     <style>
         body {
             background-color: #f8f9fa;
+            overflow-x: auto;
+        }
+
+        .wrapper {
+            width: 100%;
+            min-width: 1000px;
+            overflow-x: auto;
         }
 
         .container {
@@ -106,10 +113,12 @@
         </div>
     </header>
 
-    <div id="app"></div>
+    <div class="wrapper">
+        <div id="app"></div>
 
-    <!-- Script principal -->
-    <script type="module" src="script.js"></script>
+        <!-- Script principal -->
+        <script type="module" src="script.js"></script>
+    </div>
 
 </body>
 

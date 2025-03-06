@@ -65,7 +65,7 @@ function Calendar() {
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
             minWidth: '1500px',
             backgroundColor: "white",
-            'overflow-x': 'auto',
+            overflowX: 'auto',
         },
         headerCell: {
             backgroundColor: 'rgb(23, 65, 95)',
@@ -166,7 +166,12 @@ function Calendar() {
         },
         icon: {
             marginRight: '5px'
-        }
+        },
+        '@media (max-width: 768px)': {
+            container: {
+                maxWidth: "100%",
+            },
+        },
     };
 
     if (isLoading) {
